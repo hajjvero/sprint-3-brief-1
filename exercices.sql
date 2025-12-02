@@ -120,9 +120,56 @@ SELECT a.admission_id,
 FROM admissions a
          RIGHT JOIN patients p ON a.patient_id = p.patient_id
          RIGHT JOIN rooms r ON a.room_id = r.room_id
-     WHERE discharge_date IS NULL;
+WHERE discharge_date IS NULL;
 
-SELECT * FROM admissions_actives;
+SELECT *
+FROM admissions_actives;
 
 
 # Les bonus pour les jointures:
+
+-- 1
+SELECT CONCAT(d.first_name, ' ', d.last_name) AS medecin,
+       CONCAT(p.first_name, ' ', p.last_name) AS patient,
+       pre.prescription_date
+FROM doctors d
+         LEFT JOIN prescriptions pre ON d.doctor_id = pre.doctor_id
+         RIGHT JOIN patients p ON pre.patient_id = p.patient_id
+         LEFT JOIN admissions a ON p.patient_id = a.patient_id;
+
+-- 2
+SELECT dep.department_name, a.admission_date, a.discharge_date
+FROM departments dep
+         LEFT JOIN doctors d ON dep.department_id = d.department_id
+         LEFT JOIN prescriptions pre ON d.doctor_id = pre.doctor_id
+         RIGHT JOIN patients p ON pre.patient_id = p.patient_id
+         LEFT JOIN admissions a ON p.patient_id = a.patient_id;
+
+-- 3
+SELECT m.medication_name, pre.prescription_date, CONCAT(d.first_name, ' ', d.last_name) AS medecin
+FROM medications m
+         LEFT JOIN prescriptions pre ON m.medication_id = pre.medication_id
+         RIGHT JOIN doctors d ON pre.doctor_id = d.doctor_id;
+
+-- 4
+SELECT a.admission_id,
+       CONCAT(p.first_name, ' ', p.last_name) AS nom_patient,
+       r.room_number,
+       r.room_type,
+       r.availability,
+       a.admission_date,
+       a.discharge_date
+FROM admissions a
+         RIGHT JOIN patients p ON a.patient_id = p.patient_id
+         RIGHT JOIN rooms r ON a.room_id = r.room_id
+ORDER BY a.admission_date DESC;
+
+-- 5
+SELECT dep.department_name,
+       dep.location,
+       COUNT(DISTINCT pr.patient_id) AS nombre_patients_prescrits
+FROM departments dep
+         LEFT JOIN doctors d ON dep.department_id = d.department_id
+         LEFT JOIN prescriptions pr ON d.doctor_id = pr.doctor_id
+GROUP BY dep.department_id
+ORDER BY nombre_patients_prescrits DESC;
