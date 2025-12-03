@@ -138,12 +138,10 @@ FROM doctors d
          LEFT JOIN admissions a ON p.patient_id = a.patient_id;
 
 -- 2
-SELECT dep.department_name, a.admission_date, a.discharge_date
+SELECT dep.department_name, a.appointment_date, a.reason
 FROM departments dep
          LEFT JOIN doctors d ON dep.department_id = d.department_id
-         LEFT JOIN prescriptions pre ON d.doctor_id = pre.doctor_id
-         RIGHT JOIN patients p ON pre.patient_id = p.patient_id
-         LEFT JOIN admissions a ON p.patient_id = a.patient_id;
+         RIGHT JOIN appointments a ON a.doctor_id = d.doctor_id;
 
 -- 3
 SELECT m.medication_name, pre.prescription_date, CONCAT(d.first_name, ' ', d.last_name) AS medecin
